@@ -11,6 +11,9 @@ export const testingNavigation = {
   hyperliquid: [
     { text: 'Testnet', link: '/guides/testing-environments#testnet' },
   ],
+  gateio: [
+    { text: 'TestNet', link: '/guides/testing-environments#testnet' },
+  ],
   bitget: [
     { text: 'Demo trading', link: '/guides/testing-environments#demo-trading' },
   ],

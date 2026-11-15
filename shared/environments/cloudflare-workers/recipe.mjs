@@ -3,6 +3,12 @@ import { exchanges } from '../direct/exchanges.mjs';
 import { codeBlock } from '../../../scripts/environment-guides.mjs';
 
 const orders = {
+  gateio: {
+    credentials: ['GATEIO_API_KEY', 'GATEIO_API_SECRET'],
+    options: 'apiKey: env.GATEIO_API_KEY, apiSecret: env.GATEIO_API_SECRET',
+    environment: 'Gate.io Spot production',
+    request: "await client.submitSpotOrder({ currency_pair: 'BTC_USDT', account: 'spot', side: 'buy', type: 'limit', time_in_force: 'poc', price, amount: quantity })",
+  },
   bitget: {
     credentials: ['BITGET_API_KEY', 'BITGET_API_SECRET', 'BITGET_API_PASSPHRASE'],
     options: 'apiKey: env.BITGET_API_KEY, apiSecret: env.BITGET_API_SECRET, apiPass: env.BITGET_API_PASSPHRASE',

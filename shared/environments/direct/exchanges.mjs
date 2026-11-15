@@ -1,4 +1,22 @@
 export const exchanges = {
+  gateio: {
+    restClient: 'RestClient',
+    symbol: 'BTC_USDT',
+    continuous: true,
+    cliSubscription: "ws.subscribe({ topic: 'spot.tickers', payload: ['BTC_USDT'] }, 'spotV4')",
+    request: `const client = new RestClient();
+const tickers = await client.getSpotTicker({ currency_pair: 'BTC_USDT' });
+const price = tickers[0]?.last;`,
+    event: 'update',
+    update: `if (message.channel !== 'spot.tickers') {
+  console.log('WebSocket update:', message);
+  return;
+}
+
+const price = message.result?.last;`,
+    websocket: 'new WebsocketClient()',
+    subscription: "Promise.resolve(ws.subscribe({ topic: 'spot.tickers', payload: ['BTC_USDT'] }, 'spotV4'))",
+  },
   bitget: {
     restClient: 'RestClientV3',
     websocketClient: 'WebsocketClientV3',
