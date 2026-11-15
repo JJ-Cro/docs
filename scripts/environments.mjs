@@ -273,6 +273,17 @@ export async function generateEnvironments(ctx) {
         .replace('See Runtime compatibility for recorded verification of this configuration.', 'See Runtime setup for the scope and limits of this recipe.')
         .replaceAll('[Runtime compatibility](/compatibility) for tested versions', '[Runtime setup](/compatibility) for setup details');
     }
+    if (ctx.id === 'htx' && environment !== 'cloudflare-workers') {
+      const note = browser
+        ? 'The released SDK provides browser transport mappings. Keep the supplied Vite configuration, omit Node-only agents and keep credentials on your server. REST access depends on HTX CORS policy and regional availability. Public WebSocket messages require DecompressionStream support.'
+        : environment === 'expo'
+          ? 'HTX compressed WebSocket messages require DecompressionStream, which this recipe does not polyfill. Confirm support in your target runtime before using the stream; otherwise relay market data through your backend. The Metro files resolve imports, but do not establish device compatibility. Keep credentials on your server.'
+          : 'These examples use public market data. Compressed WebSocket messages require DecompressionStream support. Keep authenticated calls on your server. See [Runtime setup](/compatibility) for verification limits.';
+      rendered = rendered
+        .replace('## Create the project', note + '\n\n## Create the project')
+        .replace('See Runtime compatibility for recorded verification of this configuration.', 'See Runtime setup for the scope and limits of this recipe.')
+        .replaceAll('[Runtime compatibility](/compatibility) for tested versions', '[Runtime setup](/compatibility) for setup details');
+    }
     if (ctx.id === 'kraken' && environment !== 'cloudflare-workers') {
       const note = browser
         ? 'The public GET client below omits two SDK request headers that trigger a failing Kraken CORS preflight. This is an example-specific setup for public reads, not general browser REST support. See [Browser REST and CORS](/guides/troubleshooting#browser-rest-and-cors) for the limitation and a server-side alternative.'

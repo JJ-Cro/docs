@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "suiteVersion": "2-live",
+  "sdk": "htx",
+  "packageName": "@siebly/htx-api",
+  "packageVersion": "1.0.8",
+  "source": "npm",
+  "traffic": "live-mainnet",
+  "packageAvailable": true,
+  "platform": "darwin/arm64",
+  "runId": "compat-WWTP6f",
+  "checkedAt": "2026-11-15T12:54:11.856Z",
+  "targets": {
+    "node": {
+      "target": "node",
+      "status": "failed",
+      "runtimeVersion": "v24.19.0",
+      "checks": [
+        {
+          "id": "import",
+          "status": "passed",
+          "elapsedMs": 30
+        },
+        {
+          "id": "rest",
+          "status": "passed",
+          "price": "65506",
+          "operation": "SpotClient.getTicker()",
+          "observedAt": "2026-11-15T12:54:27.885Z",
+          "elapsedMs": 3720
+        },
+        {
+          "id": "websocket",
+          "status": "failed",
+          "detail": "No live market update within 25 seconds: [object Object]",
+          "elapsedMs": 25003
+        },
+        {
+          "id": "cleanup",
+          "status": "passed",
+          "elapsedMs": 0
+        },
+        {
+          "id": "commonjs",
+          "status": "passed"
+        },
+        {
+          "id": "types",
+          "status": "passed"
+        }
+      ],
+      "reason": "One or more package checks failed. See the individual checks below.",
+      "checkedAt": "2026-11-15T12:54:11.856Z",
+      "platform": "darwin/arm64",
+      "detail": "mbol(kType): 'error',\n      Symbol(kError): [Error],\n      Symbol(kMessage): 'getaddrinfo ENOTFOUND api-aws.huobi.pro'\n    }\n  }\n]\n[\n  'Websocket connection closed',\n  { category: 'htx-ws', wsKey: 'spotPublic' }\n]\n[\n  'Reconnecting to websocket with delay...',\n  { category: 'htx-ws', wsKey: 'spotPublic', connectionDelayMs: 500 }\n]\n[\n  'Reconnecting to websocket',\n  { category: 'htx-ws', wsKey: 'spotPublic' }\n]\n[\n  'WebSocket onWsError due to unexpected response error: \"getaddrinfo ENOTFOUND api-aws.huobi.pro\"',\n  {\n    category: 'htx-ws',\n    wsKey: 'spotPublic',\n    error: ErrorEvent {\n      Symbol(kTarget): [WebSocket],\n      Symbol(kType): 'error',\n      Symbol(kError): [Error],\n      Symbol(kMessage): 'getaddrinfo ENOTFOUND api-aws.huobi.pro'\n    }\n  }\n]\n[\n  'Websocket connection closed',\n  { category: 'htx-ws', wsKey: 'spotPublic' }\n]\n[\n  'Reconnecting to websocket with delay...',\n  { category: 'htx-ws', wsKey: 'spotPublic', connectionDelayMs: 500 }\n]\n[\n  'Reconnecting to websocket',\n  { category: 'htx-ws', wsKey: 'spotPublic' }\n]\n[\n  'WebSocket onWsError due to unexpected response error: \"getaddrinfo ENOTFOUND api-aws.huobi.pro\"',\n  {\n    category: 'htx-ws',\n    wsKey: 'spotPublic',\n    error: ErrorEvent {\n      Symbol(kTarget): [WebSocket],\n      Symbol(kType): 'error',\n      Symbol(kError): [Error],\n      Symbol(kMessage): 'getaddrinfo ENOTFOUND api-aws.huobi.pro'\n    }\n  }\n]\n[\n  'Websocket connection closed',\n  { category: 'htx-ws', wsKey: 'spotPublic' }\n]\n[\n  'Reconnecting to websocket with delay...',\n  { category: 'htx-ws', wsKey: 'spotPublic', connectionDelayMs: 500 }\n]\n[\n  'Reconnecting to websocket',\n  { category: 'htx-ws', wsKey: 'spotPublic' }\n]\n[\n  'WebSocket onWsError due to unexpected response error: \"getaddrinfo ENOTFOUND api-aws.huobi.pro\"',\n  {\n    category: 'htx-ws',\n    wsKey: 'spotPublic',\n    error: ErrorEvent {\n      Symbol(kTarget): [WebSocket],\n      Symbol(kType): 'error',\n      Symbol(kError): [Error],\n      Symbol(kMessage): 'getaddrinfo ENOTFOUND api-aws.huobi.pro'\n    }\n  }\n]\n[\n  'Websocket connection closed',\n  { category: 'htx-ws', wsKey: 'spotPublic' }\n]\n[\n  'Reconnecting to websocket with delay...',\n  { category: 'htx-ws', wsKey: 'spotPublic', connectionDelayMs: 500 }\n]\n[\n  'Reconnecting to websocket',\n  { category: 'htx-ws', wsKey: 'spotPublic' }\n]\n[\n  'WebSocket onWsError due to unexpected response error: \"getaddrinfo ENOTFOUND api-aws.huobi.pro\"',\n  {\n    category: 'htx-ws',\n    wsKey: 'spotPublic',\n    error: ErrorEvent {\n      Symbol(kTarget): [WebSocket],\n      Symbol(kType): 'error',\n      Symbol(kError): [Error],\n      Symbol(kMessage): 'getaddrinfo ENOTFOUND api-aws.huobi.pro'\n    }\n  }\n]\n[\n  'Websocket connection closed',\n  { category: 'htx-ws', wsKey: 'spotPublic' }\n]\n[\n  'Reconnecting to websocket with delay...',\n  { category: 'htx-ws', wsKey: 'spotPublic', connectionDelayMs: 500 }\n]\n[ 'Closing all ws connections: spotPublic' ]\n[ 'Closing connection', { category: 'htx-ws', wsKey: 'spotPublic' } ]\n"
+    },
+    "bun": {
+      "target": "bun",
+      "status": "not-run",
+      "runtimeVersion": null,
+      "checks": [],
+      "reason": "Not checked in this run."
+    },
+    "deno": {
+      "target": "deno",
+      "status": "not-run",
+      "runtimeVersion": null,
+      "checks": [],
+      "reason": "Not checked in this run."
+    },
+    "vite": {
+      "target": "vite",
+      "status": "not-run",
+      "runtimeVersion": null,
+      "checks": [],
+      "reason": "Not checked in this run."
+    },
+    "browser": {
+      "target": "browser",
+      "status": "not-run",
+      "runtimeVersion": null,
+      "checks": [],
+      "reason": "Not checked in this run."
+    },
+    "browser-configured": {
+      "target": "browser-configured",
+      "status": "not-run",
+      "runtimeVersion": null,
+      "checks": [],
+      "reason": "Not checked in this run."
+    },
+    "browser-bundle": {
+      "target": "browser-bundle",
+      "status": "not-run",
+      "runtimeVersion": null,
+      "checks": [],
+      "reason": "Not checked in this run."
+    },
+    "next": {
+      "target": "next",
+      "status": "not-run",
+      "runtimeVersion": null,
+      "checks": [],
+      "reason": "Not checked in this run."
+    },
+    "react-native": {
+      "target": "react-native",
+      "status": "not-run",
+      "runtimeVersion": null,
+      "checks": [],
+      "reason": "Not checked in this run."
+    },
+    "react-native-ios": {
+      "target": "react-native-ios",
+      "status": "not-run",
+      "runtimeVersion": null,
+      "checks": [],
+      "reason": "Not checked in this run."
+    },
+    "react-native-configured": {
+      "target": "react-native-configured",
+      "status": "not-run",
+      "runtimeVersion": null,
+      "checks": [],
+      "reason": "Not checked in this run."
+    },
+    "react-native-ios-configured": {
+      "target": "react-native-ios-configured",
+      "status": "not-run",
+      "runtimeVersion": null,
+      "checks": [],
+      "reason": "Not checked in this run."
+    }
+  },
+  "artifact": {
+    "tarball": "https://registry.npmjs.org/@siebly/htx-api/-/htx-api-1.0.8.tgz",
+    "integrity": "sha512-3kQ0bVV6Sb3HMP1do9IRYMyd+Xy7A8YNwSs9s5KZaOnsv+17zFYQU6rhwFB6OqMdLy8PLnIqGOQr1OGFln3upA=="
+  }
+}
