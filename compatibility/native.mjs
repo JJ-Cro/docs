@@ -76,6 +76,7 @@ module.exports=${profile==='configured'?"require('./siebly-sdk.metro.cjs')(confi
     const host=platform==='ios'?'127.0.0.1':'10.0.2.2';
     const collectorUrl=`http://${host}:${collector.address().port}/`;
     await writeFile(path.join(consumer,'App.js'),`
+${id==='bitmart' && profile==='configured'?"import { Buffer } from 'buffer';\nglobalThis.Buffer ??= Buffer;":''}
 import React,{useEffect,useState,useRef} from 'react';
 import {ScrollView,Text,Platform} from 'react-native';
 import {liveScenario} from './client-scenario.mjs';

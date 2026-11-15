@@ -13,7 +13,7 @@ export async function browserCheck({id,consumer,evidence,env,packageName,package
   const browserGlobal=id==='bybit'?'bybitapi':id==='binance'?'binanceapi':null;
   let configFile=false;
   if(profile==='configured') {
-    await npm(['install','--ignore-scripts','--save-exact','events@3.3.0'],{cwd:consumer,env,log:path.join(evidence,`${evidenceName}-install.log`)});
+    await npm(['install','--ignore-scripts','--save-exact','events@3.3.0', ...(id==='bitmart'?['buffer@6.0.3']:[])],{cwd:consumer,env,log:path.join(evidence,`${evidenceName}-install.log`)});
     await cp(path.join(consumer,'package-lock.json'),path.join(evidence,`${evidenceName}-package-lock.json`));
     configFile=path.join(consumer,'vite.config.mjs');
     await cp(path.join(root,'compatibility/browser-config',`${id}.mjs`),configFile);
@@ -85,7 +85,7 @@ document.getElementById('status').textContent=response.ok?'Complete. Results sav
     await writeFile(path.join(evidence,`${evidenceName}.json`),JSON.stringify({report,warnings,profile},null,2));
     const passed=completeBrowserResult(report.checks);
     const version=/Chrome\/([\d.]+)/.exec(report.userAgent)?.[1];
-    const description=profile==='vite'?'The default Vite consumer':profile==='configured'?'The Vite consumer with an events polyfill'+(id==='binance'?' and the SDK browser-signing alias':id==='coinbase'?' and public-only JWT rejection':''):'The standalone browser bundle shipped in this npm package';
+    const description=profile==='vite'?'The default Vite consumer':profile==='configured'?'The Vite consumer with an events polyfill'+(id==='binance'?' and the SDK browser-signing alias':id==='coinbase'?' and public-only JWT rejection':id==='bitmart'?' and scoped Buffer support (without binary-frame adaptation)':''):'The standalone browser bundle shipped in this npm package';
     return {status:passed?'passed':'failed',runtimeVersion:version?`Chromium ${version}`:report.userAgent,checks:[{id:'bundle',status:'passed'},...report.checks],reason:passed?`${description} passed execution checks in the browser shown here, against the live exchange REST and WebSocket APIs.`:`${description} failed browser execution checks. See the observed failures below.`,userAgent:report.userAgent,secureContext:report.secureContext,warnings,profile};
   }finally{
     clearTimeout(timer);

@@ -3,6 +3,12 @@ import { exchanges } from '../direct/exchanges.mjs';
 import { codeBlock } from '../../../scripts/environment-guides.mjs';
 
 const orders = {
+  bitmart: {
+    credentials: ['BITMART_API_KEY', 'BITMART_API_SECRET', 'BITMART_API_MEMO'],
+    options: 'apiKey: env.BITMART_API_KEY, apiSecret: env.BITMART_API_SECRET, apiMemo: env.BITMART_API_MEMO',
+    environment: 'BitMart Spot production',
+    request: "await client.submitSpotOrderV2({ symbol: 'BTC_USDT', side: 'buy', type: 'limit_maker', price, size: quantity })",
+  },
   bitget: {
     credentials: ['BITGET_API_KEY', 'BITGET_API_SECRET', 'BITGET_API_PASSPHRASE'],
     options: 'apiKey: env.BITGET_API_KEY, apiSecret: env.BITGET_API_SECRET, apiPass: env.BITGET_API_PASSPHRASE',

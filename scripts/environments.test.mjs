@@ -77,3 +77,72 @@ test('starter archives reject extra, changed and missing files', async () => {
     await rm(work, { recursive: true, force: true });
   }
 });
+
+test('BitMart recipes preserve public Spot V3 reads, topic and credential boundaries', async () => {
+  const sdk = { name: 'BitMart', packageName: 'bitmart-api' };
+  const node = await environmentFiles('bitmart', sdk, 'node');
+  assert.match(node.get('price.mjs'), /getSpotTickerV3\(\{ symbol: 'BTC_USDT' \}\)/);
+  assert.match(node.get('price.mjs'), /response\.data\.last/);
+  assert.match(node.get('stream.mjs'), /Promise\.all\(ws\.subscribe\('spot\/ticker:BTC_USDT', 'spot'\)\)/);
+  assert.match(node.get('stream.mjs'), /message\.table !== 'spot\/ticker'/);
+  assert.match(node.get('stream.mjs'), /last_price/);
+  assert.match(node.get('stream.mjs'), /SIGINT/);
+  for (const environment of environments) {
+    const files = await environmentFiles('bitmart', sdk, environment);
+    for (const [name, source] of files) {
+      if (name === 'src/order.js') continue;
+      assert.doesNotMatch(source, /apiKey:|apiSecret:|apiMemo:|submitSpotOrder/);
+    }
+  }
+  const browser = await environmentFiles('bitmart', sdk, 'vite');
+  assert.equal(JSON.parse(browser.get('package.json')).dependencies.buffer, '6.0.3');
+  assert.match(browser.get('vite.config.js'), /requestUtils\.js/);
+  assert.match(browser.get('vite.config.js'), /import \{ Buffer \} from 'buffer'/);
+  const native = await environmentFiles('bitmart', sdk, 'expo');
+  assert.match(native.get('App.js'), /globalThis\.Buffer \?\?= Buffer/);
+  const worker = await environmentFiles('bitmart', sdk, 'cloudflare-workers');
+  assert.match(worker.get('src/order.js'), /apiMemo: env\.BITMART_API_MEMO/);
+  assert.match(worker.get('src/order.js'), /submitSpotOrderV2/);
+  assert.match(worker.get('src/order.js'), /type: 'limit_maker'/);
+  assert.match(worker.get('src/order.js'), /size: quantity/);
+  assert.doesNotMatch(worker.get('src/order.js'), /demoTrading|testnet/);
+});
+
+test('BitMart live adapter only reads public ticker and subscribes to the selected Spot symbol', async () => {
+  const adapter = await import('../compatibility/adapters/bitmart.mjs');
+  assert.equal(await adapter.read({ getSpotTickerV3: async params => {
+    assert.deepEqual(params, { symbol: 'BTC_USDT' });
+    return { data: { last: '65000' } };
+  } }), '65000');
+  let subscribed = false;
+  await adapter.subscribe({ subscribe: (topic, market) => {
+    assert.equal(topic, 'spot/ticker:BTC_USDT');
+    assert.equal(market, 'spot');
+    subscribed = true;
+    return [Promise.resolve()];
+  } });
+  assert(subscribed);
+  assert.equal(adapter.value({ table: 'spot/ticker', data: [{ symbol: 'BTC_USDT', last_price: '65000' }] }), '65000');
+  assert.equal(adapter.value({ table: 'spot/ticker', data: [{ symbol: 'ETH_USDT', last_price: '3000' }] }), undefined);
+  assert.equal(adapter.value({ event: 'subscribe' }), undefined);
+});
+
+test('BitMart browser and native guides expose binary-frame limits without claiming working streams', async () => {
+  await mkdir(path.join(root, 'tmp'), { recursive: true });
+  const projectRoot = await mkdtemp(path.join(root, 'tmp/bitmart-guide-'));
+  try {
+    const docs = path.join(projectRoot, 'docs');
+    await generateEnvironments({ id: 'bitmart', sdk: { name: 'BitMart', packageName: 'bitmart-api' }, docs, projectRoot });
+    for (const environment of ['react', 'vite', 'expo']) {
+      const guide = await readFile(path.join(docs, 'environments', `${environment}.md`), 'utf8');
+      assert.match(guide, /not a verified live stream/);
+      assert.match(guide, /Blob or ArrayBuffer/);
+      assert.match(guide, /DecompressionStream\("deflate-raw"\)/);
+      assert.match(guide, /forward prices to your UI/);
+      assert.doesNotMatch(guide, /Both price fields should|each followed by a positive price/);
+      assert(!guide.includes('@@'));
+    }
+  } finally {
+    await rm(projectRoot, { recursive: true, force: true });
+  }
+});

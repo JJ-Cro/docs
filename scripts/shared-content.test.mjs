@@ -73,6 +73,7 @@ test('every SDK exposes its testing guide and shares testing limits and TypeScri
       bybit: [['Testnet', 'testnet'], ['Demo trading', 'demo-trading']],
       hyperliquid: [['Testnet', 'testnet']],
       bitget: [['Demo trading', 'demo-trading']],
+      bitmart: [['Futures demo trading', 'demo-trading']],
       okx: [['Demo trading', 'demo-trading']],
       coinbase: [['Advanced Trade sandbox', 'advanced-trade-static-sandbox'], ['Exchange sandbox', 'exchange-sandbox']],
       kraken: [['Testing without orders', 'test-without-placing-orders']],
@@ -123,4 +124,27 @@ test('TypeScript guidance recommends type checking without requiring TypeScript'
     assert.doesNotMatch(troubleshooting, /(?:Examples with TypeScript annotations need|Older runtimes may need) a TypeScript compiler or runner/);
     assert.doesNotMatch(troubleshooting, /the TypeScript examples need a compiler or runner/);
   }
+});
+
+test('BitMart guides preserve futures-only demo scope and live Spot order controls', async () => {
+  const docs = path.join(root, 'sdks/bitmart/docs');
+  const demo = await readFile(path.join(docs, 'guides/testing-environments.md'), 'utf8');
+  assert.match(demo, /same API key, secret and memo/);
+  assert.match(demo, /RestClient\(\{ demoTrading: true \}\).*remains live/);
+  assert.match(demo, /Spot WebSocket subscriptions also remain live/);
+  const errors = await readFile(path.join(docs, 'guides/errors.md'), 'utf8');
+  assert.match(errors, /body\.code/);
+  assert.match(errors, /HTTP status/);
+  const order = await readFile(path.join(root, 'sdks/bitmart/examples/first-order.ts'), 'utf8');
+  assert.match(order, /BITMART_ALLOW_LIVE_ORDER !== 'yes'/);
+  assert.match(order, /BITMART_ALLOW_LIVE_CANCEL !== 'yes'/);
+  assert.match(order, /client_order_id: clientOrderId/);
+  assert.match(order, /getSpotOrderByClientOrderIdV4\(\{/);
+  assert.match(order, /queryState:.*'history'.*'open'/);
+  assert.doesNotMatch(order, /demoTrading|testnet/);
+  const config = (await import('../sdks/bitmart/sdk.config.mjs')).default;
+  assert.deepEqual(config.clients, ['RestClient', 'FuturesClientV2', 'WebsocketClient']);
+  const streaming = await readFile(path.join(docs, 'guides/websockets.md'), 'utf8');
+  assert.match(streaming, /do not wait for exchange subscription acknowledgements/);
+  assert.match(streaming, /DecompressionStream\('deflate-raw'\)/);
 });

@@ -86,6 +86,18 @@ Each folder is a complete project. Open its README for prerequisites and run com
 - [Deno](./bitget/deno/)
 - [Cloudflare Workers](./bitget/cloudflare-workers/)
 
+## BitMart
+
+- [Node.js / JavaScript](./bitmart/node/)
+- [Node.js / TypeScript](./bitmart/typescript/)
+- [React](./bitmart/react/)
+- [Vite (plain JavaScript)](./bitmart/vite/)
+- [Next.js](./bitmart/next/)
+- [React Native / Expo](./bitmart/expo/)
+- [Bun](./bitmart/bun/)
+- [Deno](./bitmart/deno/)
+- [Cloudflare Workers](./bitmart/cloudflare-workers/)
+
 ## Maintaining these examples
 
 Edit the maintained sources in `shared/environments/`, then run `npm run starters:generate` from the repository root. Run `npm run check:starters` to check without writing files. Regeneration updates known generated files and never deletes extra files or local build output. The check reports unexpected source files and stale folders for review.

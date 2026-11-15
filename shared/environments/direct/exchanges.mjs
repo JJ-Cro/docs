@@ -1,4 +1,22 @@
 export const exchanges = {
+  bitmart: {
+    restClient: 'RestClient',
+    symbol: 'BTC_USDT',
+    continuous: true,
+    request: `const client = new RestClient();
+const response = await client.getSpotTickerV3({ symbol: 'BTC_USDT' });
+const price = response.data.last;`,
+    event: 'update',
+    update: `if (message.table !== 'spot/ticker') {
+  console.log('WebSocket update:', message);
+  return;
+}
+
+const price = message.data?.[0]?.symbol === 'BTC_USDT' ? message.data[0].last_price : undefined;`,
+    websocket: 'new WebsocketClient()',
+    subscription: "Promise.all(ws.subscribe('spot/ticker:BTC_USDT', 'spot'))",
+    cliSubscription: "Promise.all(ws.subscribe('spot/ticker:BTC_USDT', 'spot')).catch((error) => {\n  console.error('WebSocket subscription failed:', error);\n})",
+  },
   bitget: {
     restClient: 'RestClientV3',
     websocketClient: 'WebsocketClientV3',

@@ -115,6 +115,7 @@ export async function environmentFiles(id, sdk, environment) {
     }
     if (id !== 'hyperliquid') {
       pkg.dependencies.events = '3.3.0';
+      if (id === 'bitmart') pkg.dependencies.buffer = '6.0.3';
       files.set(
         environment === 'react' ? 'sdk.vite.config.js' : 'vite.config.js',
         await source(`compatibility/browser-config/${id}.mjs`),
@@ -264,7 +265,7 @@ export async function generateEnvironments(ctx) {
         .replace('See Runtime compatibility for recorded verification of this configuration.', 'Keep the public-auth helper alongside the Metro configuration.')
         .replaceAll('[Runtime compatibility](/compatibility) for tested versions', '[Runtime setup](/compatibility) for the other project recipes');
     }
-    if (['okx', 'bitget'].includes(ctx.id) && environment !== 'cloudflare-workers') {
+    if (['okx', 'bitget', 'bitmart'].includes(ctx.id) && environment !== 'cloudflare-workers') {
       const note = browser
         ? 'Keep the supplied Vite configuration: it resolves EventEmitter and rejects Node-only HTTPS agents. Browsers manage connections, so omit `keepAlive`. REST access depends on EXCHANGE CORS policy; use a server route if blocked. Keep credentials on your server.'.replace('EXCHANGE', ctx.sdk.name)
         : 'These examples use public market data. Keep authenticated account and trading calls on your server. See [Runtime setup](/compatibility) for the scope of each recipe; a successful build does not verify live exchange access.';
@@ -272,6 +273,21 @@ export async function generateEnvironments(ctx) {
         .replace('## Create the project', note + '\n\n## Create the project')
         .replace('See Runtime compatibility for recorded verification of this configuration.', 'See Runtime setup for the scope and limits of this recipe.')
         .replaceAll('[Runtime compatibility](/compatibility) for tested versions', '[Runtime setup](/compatibility) for setup details');
+    }
+    if (ctx.id === 'bitmart') {
+      const note = browser || environment === 'expo'
+        ? 'This is a setup recipe, not a verified live stream. SDK 2.5.1 only recognizes compressed WebSocket frames when `Buffer.isBuffer(data)` is true. Browser and native WebSockets can deliver Blob or ArrayBuffer frames instead, which this recipe does not adapt. Buffer support alone does not fix that limitation. Decompression also requires `DecompressionStream("deflate-raw")`, `Response` and Web Streams; React Native may lack these APIs. For reliable streaming, run the Node.js example on your server and forward prices to your UI. Public REST still depends on exchange access and, in browsers, CORS.'
+        : ['next', 'cloudflare-workers'].includes(environment)
+          ? 'This REST-only recipe is not a record of live runtime verification. A successful bundle does not establish deployed network access or private trading behavior.'
+          : 'This is a setup recipe, not a record of live runtime verification. WebSocket decompression requires `DecompressionStream("deflate-raw")`, `Response` and Web Streams. Use Node.js 24 for the Node.js examples. Verify those APIs before using a different runtime.';
+      rendered = rendered.replace('## Create the project', note + '\n\n## Create the project');
+      if (browser || environment === 'expo') {
+        rendered = rendered
+          .replace('Both price fields should display positive numbers such as `65000.5`.', 'A successful REST request displays a positive price; direct WebSocket updates are subject to the binary-frame limitation above.')
+          .replace('The page shows a REST price and a changing WebSocket price.', 'The page attempts a REST request and WebSocket subscription; the binary-frame limitation above can prevent stream updates.')
+          .replace(`The screen shows **${exchanges[ctx.id].symbol} REST price** and **${exchanges[ctx.id].symbol} WebSocket price**, each followed by a positive price such as ` + '`65000.5`.', 'The screen attempts both requests. Native stream updates depend on the binary-frame and decompression requirements above.')
+          .replace('Both price fields should contain positive numbers, such as `65000.5`.', 'Check REST and WebSocket results separately; a successful build does not resolve the binary-frame limitation above.');
+      }
     }
     if (ctx.id === 'kraken' && environment !== 'cloudflare-workers') {
       const note = browser

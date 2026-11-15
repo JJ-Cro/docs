@@ -17,7 +17,7 @@ function readme(sdk, environment) {
   const prerequisite = environment === 'bun' || environment === 'deno'
     ? `Install ${environmentTitles[environment]} first.` : 'Use Node.js 24 and npm.';
   const result = ['react', 'vite'].includes(environment)
-    ? '\nOpen the local URL printed by Vite. The page shows a REST price and live WebSocket prices.\n'
+    ? (sdk.id === 'bitmart' ? '\nOpen the local URL printed by Vite. Check REST and streaming separately; see the binary-frame limitation above.\n' : '\nOpen the local URL printed by Vite. The page shows a REST price and live WebSocket prices.\n')
     : environment === 'next'
       ? '\nOpen `http://localhost:3000/api/price`. A successful response contains the symbol and price as JSON.\n'
       : environment === 'cloudflare-workers'
@@ -25,7 +25,7 @@ function readme(sdk, environment) {
         : streaming ? '\nThe script prints a public REST price and exits.\n' : '';
   const native = environment === 'expo' ? '\nUse an Expo Go version that supports the Expo SDK in `package.json`. Press **i** for an iOS simulator or **a** for an Android emulator. iOS simulators require macOS and Xcode. Keep Expo Go in the foreground.\n' : '';
   const controls = ['react', 'vite', 'expo'].includes(environment) ? '\nUse **Stop stream** to close the price subscription.\n' : '';
-  const optionalStream = streaming ? `\n${['coinbase', 'okx', 'bitget'].includes(sdk.id) ? 'To stream WebSocket prices until Ctrl+C:' : 'To receive one WebSocket price and close the connection:'}\n\n\`\`\`sh\n${stream}\n\`\`\`\n` : '';
+  const optionalStream = streaming ? `\n${['coinbase', 'okx', 'bitget', 'bitmart'].includes(sdk.id) ? 'To stream WebSocket prices until Ctrl+C:' : 'To receive one WebSocket price and close the connection:'}\n\n\`\`\`sh\n${stream}\n\`\`\`\n` : '';
   const commonjs = environment === 'node' ? '\nFor CommonJS instead, run `node price.cjs` or `node stream.cjs`.\n' : '';
   const browserNote = sdk.id === 'kraken' && ['react', 'vite'].includes(environment)
     ? '\nThe public GET client removes the SDK’s `UserAgent` and `locale` headers because they trigger a CORS preflight that Kraken rejects. Keep this configuration for these public reads only. Run authenticated REST calls on your server, never in a browser bundle. See the guide for the server-side alternative.\n' : '';
@@ -34,11 +34,17 @@ function readme(sdk, environment) {
       + (['react', 'vite'].includes(environment) ? '\nKeep `sdk.vite.config.js`: it excludes Node-only JWT signing from this public-data application. Browser REST access depends on Coinbase CORS policy.\n' : '')
       + (environment === 'expo' ? '\nKeep `coinbase-public-auth.cjs` and both Metro configuration files. They configure the app for public market data and disable Node-only JWT signing.\n' : '')
     : '';
-  const transportNote = ['okx', 'bitget'].includes(sdk.id) && environment !== 'cloudflare-workers'
+  const transportNote = ['okx', 'bitget', 'bitmart'].includes(sdk.id) && environment !== 'cloudflare-workers'
     ? (['react', 'vite'].includes(environment)
       ? '\nKeep authenticated calls on your server. Keep the supplied Vite configuration and omit Node-only `keepAlive`. Browser REST access depends on EXCHANGE CORS policy; use a server route if requests are blocked.\n'.replace('EXCHANGE', sdk.name)
       : '\nThis example uses public market data. Keep authenticated account and trading calls on your server. See the guide for this runtime’s requirements and limitations.\n') : '';
-  return `# ${sdk.name}: ${environmentTitles[environment]}\n\nRead public market prices with \`${sdk.packageName}\`. No API key is required for public prices.\n\n${prerequisite}\n\n## Run\n\nFrom this folder:\n\n\`\`\`sh\n${install}\n${start}\n\`\`\`\n${result}${native}${controls}${optionalStream}${commonjs}${browserNote}${coinbaseNote}${transportNote}\n[Follow the complete step-by-step guide](https://sieblyio.github.io/docs/${sdk.id}/environments/${environment}.html).\n`;
+  const bitmartNote = sdk.id !== 'bitmart' ? ''
+    : ['react', 'vite', 'expo'].includes(environment)
+      ? '\nThis is a setup recipe, not live runtime verification. SDK 2.5.1 recognizes compressed frames only as Buffer data; these examples do not adapt browser/native Blob or ArrayBuffer frames. Buffer support alone does not fix this. Decompression also requires DecompressionStream with deflate-raw, Response and Web Streams. Run the Node.js stream on your server and forward prices to the UI if needed. Browser REST depends on CORS.\n'
+      : streaming
+        ? '\nThis is a setup recipe, not live runtime verification. WebSocket decompression requires DecompressionStream with deflate-raw, Response and Web Streams. Use Node.js 24 or verify those APIs in your chosen runtime.\n'
+        : '\nThis REST-only recipe does not establish live runtime compatibility. See the guide for its scope and requirements.\n';
+  return `# ${sdk.name}: ${environmentTitles[environment]}\n\nRead public market prices with \`${sdk.packageName}\`. No API key is required for public prices.\n\n${prerequisite}\n${bitmartNote}\n## Run\n\nFrom this folder:\n\n\`\`\`sh\n${install}\n${start}\n\`\`\`\n${result}${native}${controls}${optionalStream}${commonjs}${browserNote}${coinbaseNote}${transportNote}\n[Follow the complete step-by-step guide](https://sieblyio.github.io/docs/${sdk.id}/environments/${environment}.html).\n`;
 }
 
 export async function starterFiles(id, sdk, environment) {

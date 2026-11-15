@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "BitMart price screen",
+    "slug": "bitmart-price-screen",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android"
+    ]
+  }
+}

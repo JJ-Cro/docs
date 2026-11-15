@@ -11,6 +11,9 @@ export const testingNavigation = {
   hyperliquid: [
     { text: 'Testnet', link: '/guides/testing-environments#testnet' },
   ],
+  bitmart: [
+    { text: 'Futures demo trading', link: '/guides/testing-environments#demo-trading' },
+  ],
   bitget: [
     { text: 'Demo trading', link: '/guides/testing-environments#demo-trading' },
   ],

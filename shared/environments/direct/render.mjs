@@ -67,7 +67,9 @@ export async function screenFile(id, sdk, setup) {
   }
   const template = (await readFile(new URL(`./${setup}.tpl`, import.meta.url), 'utf8'))
     .replace(', WebsocketClient }', `, ${exchange.websocketClient || 'WebsocketClient'} }`);
-  return fill(template, {
+  const nativeBuffer = id === 'bitmart' && setup === 'expo'
+    ? "import { Buffer } from 'buffer';\n\nglobalThis.Buffer ??= Buffer;\n\n" : '';
+  return nativeBuffer + fill(template, {
     ...values,
     REQUEST: indent(request, 4),
     UPDATE: indent(exchange.update, 4),
