@@ -30,3 +30,7 @@ Run `npm ls binance` to check the installed version. The JavaScript Quickstart u
 - [Production usage](/guides/production)
 - [Binance SDK issues](https://github.com/sieblyio/binance/issues)
 - [Siebly support](https://siebly.io/support)
+
+## TypeScript checks
+
+<!--@include: @/.vitepress/shared/getting-started/typescript.md-->

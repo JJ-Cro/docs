@@ -30,3 +30,7 @@ Run `npm ls bybit-api` to check the installed version. The JavaScript Quickstart
 - [Production usage](/guides/production)
 - [Bybit SDK issues](https://github.com/sieblyio/bybit-api/issues)
 - [Siebly support](https://siebly.io/support)
+
+## TypeScript checks
+
+<!--@include: @/.vitepress/shared/getting-started/typescript.md-->

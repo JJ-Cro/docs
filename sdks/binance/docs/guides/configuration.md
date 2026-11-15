@@ -32,3 +32,5 @@ For REST, `beautifyResponses: true` in the first constructor argument converts k
 Reuse a client for each credential and environment combination. Limit concurrent requests in the application.
 
 [Client reference](/api/classes/MainClient) · [Production usage](/guides/production)
+
+See [Spot Testnet](/guides/testing-environments#spot-testnet) and [Demo trading](/guides/testing-environments#demo-trading) for setup, credentials and limitations.

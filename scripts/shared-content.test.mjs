@@ -56,3 +56,71 @@ test('Coinbase navigation keeps references scoped and its runtime setups expande
     }
   }
 });
+
+test('every SDK exposes its testing guide and shares testing limits and TypeScript guidance', async () => {
+  const { default: siteConfig } = await import('../shared/config.mjs');
+  const { catalogue } = await import('./context.mjs');
+  const sdks = await catalogue();
+  for (const sdk of sdks) {
+    const config = siteConfig({ sdk, catalogue: sdks, siteUrl: `http://localhost/${sdk.id}/`, originUrl: 'http://localhost/', indexable: false }, '.');
+    const sidebar = config.themeConfig.sidebar;
+    const testingPage = { relativePath: 'guides/testing-environments.md', frontmatter: {} };
+    config.transformPageData(testingPage);
+    assert.deepEqual(testingPage.frontmatter.prev, { text: 'Configuration', link: '/guides/configuration' });
+    assert.deepEqual(testingPage.frontmatter.next, { text: 'Production usage', link: '/guides/production' });
+    const expectedModes = {
+      binance: [['Spot Testnet', 'spot-testnet'], ['Demo trading', 'demo-trading']],
+      bybit: [['Testnet', 'testnet'], ['Demo trading', 'demo-trading']],
+      hyperliquid: [['Testnet', 'testnet']],
+      bitget: [['Demo trading', 'demo-trading']],
+      okx: [['Demo trading', 'demo-trading']],
+      coinbase: [['Advanced Trade sandbox', 'advanced-trade-static-sandbox'], ['Exchange sandbox', 'exchange-sandbox']],
+      kraken: [['Testing without orders', 'test-without-placing-orders']],
+    };
+    const expected = expectedModes[sdk.id].map(([text, anchor]) => ({ text, link: `/guides/testing-environments#${anchor}` }));
+    const entries = Array.isArray(sidebar) ? [['/', sidebar]] : Object.entries(sidebar);
+    for (const [route, groups] of entries) {
+      const links = groups.flatMap(group => group.items || []).filter(item => item.link?.startsWith('/guides/testing-environments'));
+      const isExchange = route === '/products/exchange' || route === '/api/classes/CBExchangeClient';
+      const supported = sdk.id === 'coinbase' && route !== '/' ? (isExchange ? [expected[1]] : []) : expected;
+      assert.deepEqual(links, supported, `${sdk.id}${route}: expose only supported modes with clear labels`);
+    }
+    const docs = path.join(root, 'sdks', sdk.id, 'docs');
+    const guide = await readFile(path.join(docs, 'guides/testing-environments.md'), 'utf8');
+    assert.match(guide, /## Available environments/);
+    assert.match(guide, /## Coverage and limitations/);
+    assert.match(guide, /<!--@include: @\/\.vitepress\/shared\/testing\/limits.md-->/);
+    assert.doesNotMatch(guide, /^# Testing environments$/m);
+    const { createMarkdownRenderer } = await import('vitepress');
+    const renderer = await createMarkdownRenderer(root);
+    assert.doesNotThrow(() => renderer.render(guide.split('\n').filter(line => /^#{1,6} /.test(line)).join('\n')), `${sdk.id}: headings must render without duplicate anchors`);
+    for (const [, anchor] of expectedModes[sdk.id]) assert(guide.includes(`{#${anchor}}`), `${sdk.id}: missing stable anchor ${anchor}`);
+    for (const page of ['getting-started.md', 'guides/configuration.md']) {
+      const content = await readFile(path.join(docs, page), 'utf8');
+      for (const {text, link} of expected) assert(content.includes(`[${text}](${link})`), `${sdk.id}/${page}: missing direct mode entry`);
+      assert(!content.includes('[Testing environments]'), `${sdk.id}/${page}: vague entry label`);
+    }
+    for (const page of ['getting-started.md', 'guides/troubleshooting.md']) {
+      assert.match(await readFile(path.join(docs, page), 'utf8'), /<!--@include: @\/\.vitepress\/shared\/getting-started\/typescript.md-->/);
+    }
+  }
+  const limits = await readFile(path.join(root, 'shared/content/testing/limits.md'), 'utf8');
+  assert.match(limits, /Testnet is not a reliable place to evaluate strategy performance/);
+  assert.match(limits, /Production remains the default/);
+});
+
+test('TypeScript guidance recommends type checking without requiring TypeScript', async () => {
+  const { catalogue } = await import('./context.mjs');
+  const guidance = await readFile(path.join(root, 'shared/content/getting-started/typescript.md'), 'utf8');
+  assert.match(guidance, /JavaScript and TypeScript/);
+  assert.match(guidance, /TypeScript is optional/);
+  assert.match(guidance, /strongly recommend/);
+  assert.match(guidance, /Some runtimes can execute TypeScript directly/);
+  assert.match(guidance, /does \*\*not\*\* check types/);
+  assert.match(guidance, /Plain JavaScript usage does not need any TypeScript tooling/);
+  for (const sdk of await catalogue()) {
+    const troubleshooting = await readFile(path.join(root, 'sdks', sdk.id, 'docs/guides/troubleshooting.md'), 'utf8');
+    assert.doesNotMatch(troubleshooting, /(?:Examples with TypeScript annotations need|Older runtimes may need) a TypeScript compiler or runner/);
+    assert.doesNotMatch(troubleshooting, /the TypeScript examples need a compiler or runner/);
+  }
+});

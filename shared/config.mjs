@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { testingNavigation } from './testing-navigation.mjs';
 import { coinbaseSidebar } from './coinbase-sidebar.mjs';
 import { sourceCommentMarkup } from './markdown.mjs';
 import { analyticsAttributes } from './site-services.mjs';
@@ -19,7 +20,9 @@ export default function siteConfig(data, docs) {
       ...(sdk.guides || []),
     ] },
     { text: 'Using the SDK', items: [
-      { text: 'Configuration', link: '/guides/configuration' }, { text: 'Proxies', link: '/guides/proxies' },
+      { text: 'Configuration', link: '/guides/configuration' },
+      ...testingNavigation[sdkId],
+      { text: 'Proxies', link: '/guides/proxies' },
       { text: 'Error handling', link: '/guides/errors' },
       { text: 'Production usage', link: '/guides/production' }, { text: 'Troubleshooting', link: '/guides/troubleshooting' },
     ] },
@@ -97,6 +100,9 @@ export default function siteConfig(data, docs) {
       if (page.relativePath.startsWith('environments/')) {
         page.frontmatter.prev = { text: 'Quickstart', link: '/getting-started' };
         page.frontmatter.next = { text: 'Public market data (REST)', link: '/guides/market-data' };
+      } else if (page.relativePath === 'guides/testing-environments.md') {
+        page.frontmatter.prev = { text: 'Configuration', link: '/guides/configuration' };
+        page.frontmatter.next = { text: 'Production usage', link: '/guides/production' };
       } else if (page.relativePath === 'compatibility.md') {
         page.frontmatter.prev = false;
         page.frontmatter.next = false;

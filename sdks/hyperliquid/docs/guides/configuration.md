@@ -54,3 +54,5 @@ Browser bundles support public REST requests and subscriptions. REST access depe
 | REST, accounts, signers and network | [RestClientOptions](/api/interfaces/RestClientOptions) |
 | Socket timeouts, heartbeats and reconnects | [WebsocketClientOptions](/api/interfaces/WebsocketClientOptions) |
 | Awaitable WebSocket request client | [WebsocketAPIClientOptions](/api/type-aliases/WebsocketAPIClientOptions) |
+
+See [Testnet](/guides/testing-environments#testnet) for setup, credentials and limitations.

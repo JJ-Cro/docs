@@ -34,3 +34,5 @@ For REST and private WebSocket connections, `demoTrading` takes precedence if bo
 Reuse a client for each credential and environment combination. Limit concurrent requests in the application.
 
 [Client reference](/api/classes/RestClientV5) · [Production usage](/guides/production)
+
+See [Testnet](/guides/testing-environments#testnet) and [Demo trading](/guides/testing-environments#demo-trading) for setup, credentials and limitations.

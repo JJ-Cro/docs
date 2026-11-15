@@ -75,3 +75,7 @@ After a timeout or disconnect during a signed action, the outcome may be unknown
 Include the SDK version (`npm ls @siebly/hyperliquid-api`), Node version, network, method, minimal example and relevant error fields. For streams, include the channel and connection events around the failure. Remove private keys, signed payloads and other sensitive values before sharing a report.
 
 Check the [SDK issue tracker](https://github.com/sieblyio/hyperliquid-api/issues) for existing reports and fixes.
+
+## TypeScript checks
+
+<!--@include: @/.vitepress/shared/getting-started/typescript.md-->

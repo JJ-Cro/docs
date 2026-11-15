@@ -30,3 +30,5 @@ Use Spot credentials with `SpotClient` and private Spot streams; use Futures cre
 For [streaming](/guides/websockets#subscribe-to-a-ticker), pass a connection key from `WS_KEY_MAP` to `subscribe()`. For example, `spotPublicV2` selects public Spot v2 data and `spotPrivateV2` selects [private Spot v2 data](/guides/private-streams#observe-spot-executions).
 
 [Production usage](/guides/production) · [Error handling](/guides/errors)
+
+See [Testing without orders](/guides/testing-environments#test-without-placing-orders) for ways to validate your integration without placing orders.
