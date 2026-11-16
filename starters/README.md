@@ -86,6 +86,18 @@ Each folder is a complete project. Open its README for prerequisites and run com
 - [Deno](./bitget/deno/)
 - [Cloudflare Workers](./bitget/cloudflare-workers/)
 
+## Gate.io
+
+- [Node.js / JavaScript](./gateio/node/)
+- [Node.js / TypeScript](./gateio/typescript/)
+- [React](./gateio/react/)
+- [Vite (plain JavaScript)](./gateio/vite/)
+- [Next.js](./gateio/next/)
+- [React Native / Expo](./gateio/expo/)
+- [Bun](./gateio/bun/)
+- [Deno](./gateio/deno/)
+- [Cloudflare Workers](./gateio/cloudflare-workers/)
+
 ## Maintaining these examples
 
 Edit the maintained sources in `shared/environments/`, then run `npm run starters:generate` from the repository root. Run `npm run check:starters` to check without writing files. Regeneration updates known generated files and never deletes extra files or local build output. The check reports unexpected source files and stale folders for review.

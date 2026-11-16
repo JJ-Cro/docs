@@ -1,0 +1,8 @@
+{
+  "name": "gateio-deno-quickstart",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "gateio-api": "latest"
+  }
+}

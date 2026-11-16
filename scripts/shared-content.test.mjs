@@ -73,6 +73,7 @@ test('every SDK exposes its testing guide and shares testing limits and TypeScri
       bybit: [['Testnet', 'testnet'], ['Demo trading', 'demo-trading']],
       hyperliquid: [['Testnet', 'testnet']],
       bitget: [['Demo trading', 'demo-trading']],
+      gateio: [['TestNet', 'testnet']],
       okx: [['Demo trading', 'demo-trading']],
       coinbase: [['Advanced Trade sandbox', 'advanced-trade-static-sandbox'], ['Exchange sandbox', 'exchange-sandbox']],
       kraken: [['Testing without orders', 'test-without-placing-orders']],

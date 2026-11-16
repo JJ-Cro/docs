@@ -3,6 +3,12 @@ import { exchanges } from '../direct/exchanges.mjs';
 import { codeBlock } from '../../../scripts/environment-guides.mjs';
 
 const orders = {
+  gateio: {
+    credentials: ['GATEIO_API_KEY', 'GATEIO_API_SECRET'],
+    options: 'apiKey: env.GATEIO_API_KEY, apiSecret: env.GATEIO_API_SECRET',
+    environment: 'Gate.io Spot production',
+    request: "await client.submitSpotOrder({ currency_pair: 'BTC_USDT', account: 'spot', side: 'buy', type: 'limit', time_in_force: 'poc', price, amount: quantity })",
+  },
   bitget: {
     credentials: ['BITGET_API_KEY', 'BITGET_API_SECRET', 'BITGET_API_PASSPHRASE'],
     options: 'apiKey: env.BITGET_API_KEY, apiSecret: env.BITGET_API_SECRET, apiPass: env.BITGET_API_PASSPHRASE',
@@ -75,6 +81,6 @@ export function workerGuideFields(id, files) {
     WORKER_ORDER_ID_NOTE: id === 'coinbase' ? 'Also supply `clientOrderId`: generate a unique ID in your calling application and persist it before sending. Use that same ID to resolve an uncertain order outcome before submitting another order.' : '',
     WORKER_CACHE: id === 'kraken'
       ? 'This Kraken recipe uses the SDK’s native request configuration without an Axios cache override.'
-      : "The second constructor argument sets `fetchOptions.cache` to `no-store`, a [cache mode Workers supports](https://developers.cloudflare.com/workers/runtime-apis/request/). Axios 1.20.0 otherwise requests `default`, which Workers rejects. Keep this option while using that affected version. [Axios 1.21.0](https://github.com/axios/axios/releases/tag/v1.21.0) fixes this default cache behavior. SDK dependency upgrades follow [Siebly’s security policy](https://siebly.io/security), which generally includes at least 30 days of review. This does not guarantee a release date. You do not need to override the SDK dependency.",
+      : "The second constructor argument sets `fetchOptions.cache` to `no-store`, a [cache mode Workers supports](https://developers.cloudflare.com/workers/runtime-apis/request/). Axios 1.20.0 otherwise requests `default`, which Workers rejects. Keep this option while using that affected version. [Axios 1.21.0](https://github.com/axios/axios/releases/tag/v1.21.0) fixes this default cache behavior. SDK dependency upgrades follow [Siebly’s security policy](https://siebly.io/security), which generally includes at least 30 days of review. You do not need to override the SDK dependency.",
   };
 }
