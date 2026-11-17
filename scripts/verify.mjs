@@ -91,7 +91,7 @@ console.log('Checking indexable output under a GitHub Pages project prefix...');
 try {
   await build([], { DOCS_SITE_URL: 'https://sieblyio.github.io/sdk-docs-local-check/', DOCS_INDEXABLE: '1' });
   const checks = await checkSite(dist);
-  assert(checks.indexable && checks.sdkCount === 3);
+  assert(checks.indexable && checks.sdkCount === ids.length);
   result.githubPagesPrefixAndSeo = true;
 } finally {
   await build([], { DOCS_SITE_URL: 'http://localhost:4173/', DOCS_INDEXABLE: '0' });

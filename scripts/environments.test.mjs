@@ -77,3 +77,65 @@ test('starter archives reject extra, changed and missing files', async () => {
     await rm(work, { recursive: true, force: true });
   }
 });
+
+test('KuCoin recipes retain response envelopes, subscription keys and persisted order IDs', async () => {
+  const sdk = { id: 'kucoin', ...(await import('../sdks/kucoin/sdk.config.mjs')).default };
+  const cli = await environmentFiles(sdk.id, sdk, 'node');
+  assert.match(cli.get('price.mjs'), /response.data.price/);
+  assert.match(cli.get('stream.mjs'), /spotPublicV1/);
+  assert.match(cli.get('stream.mjs'), /process.once\('SIGINT', stop\)/);
+  assert.doesNotMatch(cli.get('stream.mjs'), /Promise.all\(ws.subscribe/);
+  const worker = await environmentFiles(sdk.id, sdk, 'cloudflare-workers');
+  const order = worker.get('src/order.js');
+  for (const pattern of [/request.method !== 'POST'/, /env.ORDER_TOKEN/, /apiPassphrase: env.KUCOIN_API_PASSPHRASE/, /clientOid: clientOrderId/, /submitHFOrder/, /typeof clientOrderId !== 'string'/, /postOnly: true/, /size: quantity/, /cache: 'no-store'/]) {
+    assert.match(order, pattern);
+  }
+  assert.doesNotMatch(order, /client\.submitOrder\(/);
+  const browser = await environmentFiles(sdk.id, sdk, 'vite');
+  assert.match(browser.get('vite.config.js'), /kucoin-browser-transport/);
+  assert.match(browser.get('vite.config.js'), /Node.js-only/);
+});
+
+test('KuCoin compatibility adapter reads the public ticker and routes the Spot stream', async () => {
+  const adapter = await import('../compatibility/adapters/kucoin.mjs');
+  assert.equal(await adapter.read({ async getTicker(params) {
+    assert.deepEqual(params, { symbol: 'BTC-USDT' });
+    return { data: { price: '123.45' } };
+  } }), '123.45');
+  assert.equal(adapter.value({ topic: '/market/ticker:BTC-USDT', data: { price: '123.45' } }), '123.45');
+  assert.equal(adapter.value({ topic: '/market/ticker:ETH-USDT', data: { price: '123.45' } }), undefined);
+  await adapter.subscribe({ subscribe(topic, key) {
+    assert.equal(topic, '/market/ticker:BTC-USDT');
+    assert.equal(key, 'spotPublicV1');
+  } });
+});
+
+test('Gate.io recipes retain public Spot subscriptions and separate authenticated Workers orders', async () => {
+  const sdk = (await catalogue()).find(sdk => sdk.id === 'gateio');
+  assert(sdk);
+  const adapter = await import('../compatibility/adapters/gateio.mjs');
+  const calls = [];
+  assert.equal(await adapter.read({ async getSpotTicker(params) {
+    calls.push(params);
+    return [{ last: '123.45' }];
+  } }), '123.45');
+  assert.deepEqual(calls, [{ currency_pair: 'BTC_USDT' }]);
+  await adapter.subscribe({ subscribe(...args) { calls.push(args); } });
+  assert.deepEqual(calls[1], [{ topic: 'spot.tickers', payload: ['BTC_USDT'] }, 'spotV4']);
+  assert.equal(adapter.value({ channel: 'spot.tickers', result: { last: '123.45' } }), '123.45');
+  assert.equal(adapter.value({ channel: 'spot.orders', result: { last: '123.45' } }), undefined);
+
+  const workers = await environmentFiles(sdk.id, sdk, 'cloudflare-workers');
+  assert.match(workers.get('src/index.js'), /getSpotTicker/);
+  assert.doesNotMatch(workers.get('src/index.js'), /apiKey|apiSecret|submitSpotOrder/);
+  const order = workers.get('src/order.js');
+  for (const pattern of [/request.method !== 'POST'/, /env.ORDER_TOKEN/, /env.GATEIO_API_KEY/, /env.GATEIO_API_SECRET/, /submitSpotOrder/, /time_in_force: 'poc'/, /amount: quantity/, /cache: 'no-store'/]) {
+    assert.match(order, pattern);
+  }
+  const browser = await environmentFiles(sdk.id, sdk, 'vite');
+  assert.match(browser.get('vite.config.js'), /gateio-browser-transport/);
+  assert.match(browser.get('vite.config.js'), /Node.js-only/);
+  const cli = await environmentFiles(sdk.id, sdk, 'node');
+  assert.match(cli.get('stream.mjs'), /process.once\('SIGINT', stop\)/);
+  assert.doesNotMatch(cli.get('stream.mjs'), /Promise.all\(ws.subscribe/);
+});

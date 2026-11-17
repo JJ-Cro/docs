@@ -1,4 +1,58 @@
 export const exchanges = {
+  htx: {
+    restClient: 'SpotClient',
+    symbol: 'btcusdt',
+    request: `const client = new SpotClient();
+const response = await client.getTicker({ symbol: 'btcusdt' });
+const price = response.tick.close;`,
+    event: 'message',
+    update: `if (Array.isArray(message) || message.ch !== 'market.btcusdt.detail') {
+  return;
+}
+const tick = message.tick;
+if (!tick || typeof tick !== 'object' || !('close' in tick)) {
+  return;
+}
+const price = tick.close;`,
+    websocket: 'new WebsocketClient()',
+    subscription: "Promise.resolve(ws.subscribe('market.btcusdt.detail', 'spotPublic'))",
+  },
+  kucoin: {
+    restClient: 'SpotClient',
+    symbol: 'BTC-USDT',
+    continuous: true,
+    cliSubscription: "ws.subscribe('/market/ticker:BTC-USDT', 'spotPublicV1')",
+    request: `const client = new SpotClient();
+const response = await client.getTicker({ symbol: 'BTC-USDT' });
+const price = response.data.price;`,
+    event: 'update',
+    update: `if (message.topic !== '/market/ticker:BTC-USDT') {
+  console.log('WebSocket update:', message);
+  return;
+}
+
+const price = message.data?.price;`,
+    websocket: 'new WebsocketClient()',
+    subscription: "Promise.resolve(ws.subscribe('/market/ticker:BTC-USDT', 'spotPublicV1'))",
+  },
+  gateio: {
+    restClient: 'RestClient',
+    symbol: 'BTC_USDT',
+    continuous: true,
+    cliSubscription: "ws.subscribe({ topic: 'spot.tickers', payload: ['BTC_USDT'] }, 'spotV4')",
+    request: `const client = new RestClient();
+const tickers = await client.getSpotTicker({ currency_pair: 'BTC_USDT' });
+const price = tickers[0]?.last;`,
+    event: 'update',
+    update: `if (message.channel !== 'spot.tickers') {
+  console.log('WebSocket update:', message);
+  return;
+}
+
+const price = message.result?.last;`,
+    websocket: 'new WebsocketClient()',
+    subscription: "Promise.resolve(ws.subscribe({ topic: 'spot.tickers', payload: ['BTC_USDT'] }, 'spotV4'))",
+  },
   bitget: {
     restClient: 'RestClientV3',
     websocketClient: 'WebsocketClientV3',

@@ -86,6 +86,42 @@ Each folder is a complete project. Open its README for prerequisites and run com
 - [Deno](./bitget/deno/)
 - [Cloudflare Workers](./bitget/cloudflare-workers/)
 
+## Gate.io
+
+- [Node.js / JavaScript](./gateio/node/)
+- [Node.js / TypeScript](./gateio/typescript/)
+- [React](./gateio/react/)
+- [Vite (plain JavaScript)](./gateio/vite/)
+- [Next.js](./gateio/next/)
+- [React Native / Expo](./gateio/expo/)
+- [Bun](./gateio/bun/)
+- [Deno](./gateio/deno/)
+- [Cloudflare Workers](./gateio/cloudflare-workers/)
+
+## KuCoin
+
+- [Node.js / JavaScript](./kucoin/node/)
+- [Node.js / TypeScript](./kucoin/typescript/)
+- [React](./kucoin/react/)
+- [Vite (plain JavaScript)](./kucoin/vite/)
+- [Next.js](./kucoin/next/)
+- [React Native / Expo](./kucoin/expo/)
+- [Bun](./kucoin/bun/)
+- [Deno](./kucoin/deno/)
+- [Cloudflare Workers](./kucoin/cloudflare-workers/)
+
+## HTX
+
+- [Node.js / JavaScript](./htx/node/)
+- [Node.js / TypeScript](./htx/typescript/)
+- [React](./htx/react/)
+- [Vite (plain JavaScript)](./htx/vite/)
+- [Next.js](./htx/next/)
+- [React Native / Expo](./htx/expo/)
+- [Bun](./htx/bun/)
+- [Deno](./htx/deno/)
+- [Cloudflare Workers](./htx/cloudflare-workers/)
+
 ## Maintaining these examples
 
 Edit the maintained sources in `shared/environments/`, then run `npm run starters:generate` from the repository root. Run `npm run check:starters` to check without writing files. Regeneration updates known generated files and never deletes extra files or local build output. The check reports unexpected source files and stale folders for review.
